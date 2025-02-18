@@ -2,7 +2,7 @@ name: Terraform Format & Validate
 
 on:
   pull_request:
-    branches: [terraform]
+    branches: [main]
     paths:
       - '**/*.tf'  
 jobs:
