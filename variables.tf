@@ -1,6 +1,6 @@
 variable "region" {
   description = "AWS region"
-  default     = "us-west-1"
+  default     = "us-east-1"
 }
 
 variable "vpc_cidr" {
@@ -20,6 +20,6 @@ variable "private_subnets" {
   default     = ["10.0.4.0/24", "10.0.5.0/24", "10.0.6.0/24"]
 }
 variable "aws_profile" {
-  description = "AWS CLI profile to use"
-  default     = "dev"
+      description = "AWS CLI profile to use"
+      default     = "dev"
 }
