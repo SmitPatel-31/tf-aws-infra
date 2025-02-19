@@ -26,13 +26,13 @@ resource "aws_route_table_association" "public" {
   }
 }
 
-resource "aws_route_table" "private" {
-  vpc_id = aws_vpc.main.id
+    resource "aws_route_table" "private" {
+      vpc_id = aws_vpc.main.id
 
-  tags = {
-    Name = "private-route-table"
-  }
-}
+          tags = {
+            Name = "private-route-table"
+          }
+    }
 
 resource "aws_route_table_association" "private" {
   count          = length(var.private_subnets)
@@ -44,5 +44,3 @@ resource "aws_route_table_association" "private" {
   }
 }
 
-
-# eee
