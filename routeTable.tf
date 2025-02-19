@@ -43,3 +43,6 @@ resource "aws_route_table_association" "private" {
     command = "echo 'Private subnet associated with route table'"
   }
 }
+
+
+# eee
