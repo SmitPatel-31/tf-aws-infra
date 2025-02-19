@@ -1,0 +1,25 @@
+name: Terraform Format & Validate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '**/*.tf'  
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Terraform (v5.x.x to <6.0.0)
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: '>=5.0.0, <6.0.0'
+
+      - name: Terraform fmt (Check Formatting)
+        run: terraform fmt -check -recursive
+
+      - name: Terraform validate (Check Configuration)
+        run: terraform validate
