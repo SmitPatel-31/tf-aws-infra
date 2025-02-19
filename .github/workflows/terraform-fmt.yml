@@ -19,8 +19,7 @@ jobs:
           terraform_version: '>=5.0.0, <6.0.0'
 
       - name: Terraform Init (Install Providers)
-        run: terraform init  # Add this step
-
+        run: terraform init 
       - name: Terraform fmt (Check Formatting)
         run: terraform fmt -check -recursive
 
