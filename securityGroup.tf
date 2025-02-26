@@ -29,7 +29,7 @@ resource "aws_security_group" "app_sg" {
 
   # Allow Application-Specific Port (e.g., 3000)
   ingress {
-    from_port   = 8080  
+    from_port   = 8080
     to_port     = 8080
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
