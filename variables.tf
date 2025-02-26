@@ -23,3 +23,9 @@ variable "aws_profile" {
   description = "AWS CLI profile to use"
   default     = "dev"
 }
+
+variable "custom_ami" {
+  description = "Custom AMI ID for EC2 instance"
+  type        = string
+  default = "ami-068254f0d5423b55b"
+}
