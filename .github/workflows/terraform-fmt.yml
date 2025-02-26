@@ -33,9 +33,6 @@ jobs:
           export TF_VAR_custom_ami="${{ secrets.CUSTOM_AMI }}"
           echo "Terraform variables set from GitHub Secrets"
           env | grep TF_VAR_  # Debugging step to verify variables are set
-          
-      - name: Debug Environment Variables (Optional)
-        run: env | grep TF_VAR_
 
       - name: Terraform validate (Check Configuration)
         run: terraform validate
