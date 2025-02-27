@@ -44,6 +44,6 @@ resource "aws_security_group" "app_sg" {
   }
 
   tags = {
-    Name = "app-security-group"
+    Name = "application-security-group"
   }
 }
