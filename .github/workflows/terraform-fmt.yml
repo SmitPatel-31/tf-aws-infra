@@ -31,6 +31,10 @@ jobs:
           export TF_VAR_private_subnets="${{ secrets.PRIVATE_SUBNETS }}"
           export TF_VAR_aws_profile="${{ secrets.AWS_PROFILE }}"
           export TF_VAR_custom_ami="${{ secrets.CUSTOM_AMI }}"
+          export TF_VAR_db_dialect="${{ secrets.DB_DIALECT }}"
+          export TF_VAR_db_name="${{ secrets.DB_NAME }}"
+          export TF_VAR_db_username="${{ secrets.DB_USERNAME }}"
+          export TF_VAR_db_password="${{ secrets.DB_PASSWORD }}"
           echo "Terraform variables set from GitHub Secrets"
           env | grep TF_VAR_  # Debugging step to verify variables are set
 
