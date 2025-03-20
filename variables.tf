@@ -25,3 +25,20 @@ variable "custom_ami" {
   description = "Custom AMI ID for EC2 instance"
   type        = string
 }
+variable "db_dialect" {
+  description = "Database dialect"
+  type        = string
+}
+
+variable "db_password" {
+  description = "Database password"
+  type        = string
+}
+variable "db_name" {
+  description = "Database name"
+  type        = string
+}
+variable "db_username" {
+  description = "Database user"
+  type        = string
+}
