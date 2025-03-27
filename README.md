@@ -1,7 +1,7 @@
 # Terraform Infrastructure Setup
 
 ## Overview
-This project provisions cloud infrastructure using Terraform. It automates the setup of networking, IAM policies, an S3 bucket, and an RDS database instance.
+This project provisions cloud infrastructure using Terraform. It automates the setup of networking, IAM policies, an S3 bucket, an RDS database instance, and CloudWatch monitoring.
 
 ## Learning Objectives
 The objective of this assignment is to:
@@ -11,6 +11,7 @@ The objective of this assignment is to:
 - Configure IAM roles and policies.
 - Set up an S3 bucket with encryption and lifecycle policies.
 - Deploy an RDS instance with a secure security group and parameter group.
+- Integrate CloudWatch for logging and monitoring.
 
 ## Project Structure
 ```
@@ -25,6 +26,7 @@ The objective of this assignment is to:
 ├── iam.tf              # IAM roles and policies
 ├── rds.tf              # RDS instance configuration
 ├── s3.tf               # S3 bucket setup
+├── cloudwatch.tf       # CloudWatch Agent and IAM policies
 ├── .github/
 │   └── workflows/
 │       └── terraform-ci.yml  # GitHub Actions workflow for Terraform CI
@@ -35,7 +37,8 @@ The objective of this assignment is to:
 
 ### 1. IAM Roles & Policies
 - Define necessary permissions for the infrastructure.
-- Create IAM roles and policies required for EC2, RDS, and S3.
+- Create IAM roles and policies required for EC2, RDS, S3, and CloudWatch logging.
+- Attach IAM policies for CloudWatch metrics collection and logging.
 
 ### 2. S3 Bucket
 - Create a private S3 bucket with a UUID as the bucket name.
@@ -66,6 +69,18 @@ The objective of this assignment is to:
   - **Database Name**: `csye6225`
   - **Security Group**: Attach the database security group
 
+### 6. CloudWatch Integration
+- **IAM Updates:** Attach IAM roles and policies to EC2 instances for CloudWatch logging and monitoring.
+- **AMI Updates:** Modify Packer template to install the Unified CloudWatch Agent.
+- **User Data Script Updates:**
+  - Configure the CloudWatch Agent to collect system logs and metrics.
+  - Restart the CloudWatch Agent on instance startup.
+- **Metrics Collected:**
+  - API request counts and execution times.
+  - Database query execution times.
+  - S3 interaction latencies.
+  - System-level metrics such as CPU, memory, and disk usage.
+
 ## Deployment Instructions
 
 ### Prerequisites
@@ -94,6 +109,7 @@ Ensure you have the following installed:
    - Check AWS Console to confirm resources are provisioned correctly.
    - Use `aws s3 ls` to verify the S3 bucket.
    - Use `aws rds describe-db-instances` to check the RDS instance.
+   - Use `aws logs describe-log-groups` to verify CloudWatch logging.
 
 ### Destroy Infrastructure
 To tear down the infrastructure when no longer needed:
@@ -109,5 +125,4 @@ terraform destroy -auto-approve
 - Ensure IAM roles and policies are correctly configured to avoid permission issues.
 - Keep RDS credentials secure by storing them in AWS Secrets Manager.
 - Avoid exposing the database to the public for security reasons.
-
-
+- Monitor CloudWatch for application logs and performance metrics.
