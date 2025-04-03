@@ -1,7 +1,7 @@
 # Terraform Infrastructure Setup
 
 ## Overview
-This project provisions cloud infrastructure using Terraform. It automates the setup of networking, IAM policies, an S3 bucket, an RDS database instance, and CloudWatch monitoring.
+This project provisions cloud infrastructure using Terraform. It automates the setup of networking, IAM policies, an S3 bucket, an RDS database instance, CloudWatch monitoring, and an auto-scaling application stack with a load balancer.
 
 ## Learning Objectives
 The objective of this assignment is to:
@@ -12,6 +12,8 @@ The objective of this assignment is to:
 - Set up an S3 bucket with encryption and lifecycle policies.
 - Deploy an RDS instance with a secure security group and parameter group.
 - Integrate CloudWatch for logging and monitoring.
+- Implement an auto-scaling EC2 setup with a load balancer.
+- Configure Route53 to manage DNS records for the application.
 
 ## Project Structure
 ```
@@ -27,6 +29,9 @@ The objective of this assignment is to:
 ├── rds.tf              # RDS instance configuration
 ├── s3.tf               # S3 bucket setup
 ├── cloudwatch.tf       # CloudWatch Agent and IAM policies
+├── autoscaling.tf      # Auto-scaling setup
+├── load_balancer.tf    # Application Load Balancer setup
+├── route53.tf          # Route 53 DNS updates
 ├── .github/
 │   └── workflows/
 │       └── terraform-ci.yml  # GitHub Actions workflow for Terraform CI
@@ -37,7 +42,7 @@ The objective of this assignment is to:
 
 ### 1. IAM Roles & Policies
 - Define necessary permissions for the infrastructure.
-- Create IAM roles and policies required for EC2, RDS, S3, and CloudWatch logging.
+- Create IAM roles and policies required for EC2, RDS, S3, CloudWatch, and Auto Scaling.
 - Attach IAM policies for CloudWatch metrics collection and logging.
 
 ### 2. S3 Bucket
@@ -47,18 +52,21 @@ The objective of this assignment is to:
 - Ensure Terraform can delete the bucket even if it is not empty.
 
 ### 3. Security Groups
-#### Database Security Group:
-- Allow TCP traffic on **port 5432** (PostgreSQL) or **3306** (MySQL/MariaDB).
-- Restrict access to only allow traffic from the application security group.
-- Block public access to the database.
+#### Load Balancer Security Group:
+- Allow TCP traffic on ports **80** and **443** from anywhere.
+
+#### Application Security Group:
+- Allow TCP traffic on ports **22** and the application port.
+- Only allow traffic from the Load Balancer Security Group.
+- Restrict public access to the instance.
 
 ### 4. RDS Parameter Group
-- Create a parameter group for PostgreSQL, MySQL, or MariaDB.
+- Create a parameter group for PostgreSQL
 - Attach it to the RDS instance.
 
 ### 5. RDS Instance
 - Deploy an RDS instance with the following configuration:
-  - **Engine**: PostgreSQL/MySQL/MariaDB
+  - **Engine**: PostgreSQL
   - **Instance Class**: Cheapest available
   - **Multi-AZ Deployment**: No
   - **Instance Identifier**: `csye6225`
@@ -71,7 +79,6 @@ The objective of this assignment is to:
 
 ### 6. CloudWatch Integration
 - **IAM Updates:** Attach IAM roles and policies to EC2 instances for CloudWatch logging and monitoring.
-- **AMI Updates:** Modify Packer template to install the Unified CloudWatch Agent.
 - **User Data Script Updates:**
   - Configure the CloudWatch Agent to collect system logs and metrics.
   - Restart the CloudWatch Agent on instance startup.
@@ -80,6 +87,35 @@ The objective of this assignment is to:
   - Database query execution times.
   - S3 interaction latencies.
   - System-level metrics such as CPU, memory, and disk usage.
+
+### 7. Auto Scaling Application Stack
+- Disable direct access to the web application via the EC2 instance's IP.
+- Ensure access is only through the load balancer.
+
+#### Auto Scaling Setup:
+- Minimum instances: **3**
+- Maximum instances: **5**
+- Cooldown: **60 seconds**
+- Auto Scaling Policies:
+  - Scale up when CPU usage > **5%** (increment by 1 instance).
+  - Scale down when CPU usage < **3%** (decrement by 1 instance).
+
+#### Launch Templates:
+- **AMI:** Custom AMI
+- **Instance Type:** Configurable
+- **Security Group:** Application Security Group
+- **IAM Role:** Same as current EC2 instance
+- **User Data:** Same as current EC2 instance
+
+### 8. Application Load Balancer
+- Accept HTTP traffic on port **80** and forward it to the application.
+- Attach the Load Balancer Security Group.
+- Balance traffic across Auto Scaling instances.
+
+### 9. Route 53 DNS Updates
+- Update Route53 records via Terraform.
+- Create an alias record for the load balancer.
+- Ensure the application is accessible at `http://(dev|demo).fetchme.me/`.
 
 ## Deployment Instructions
 
@@ -110,6 +146,8 @@ Ensure you have the following installed:
    - Use `aws s3 ls` to verify the S3 bucket.
    - Use `aws rds describe-db-instances` to check the RDS instance.
    - Use `aws logs describe-log-groups` to verify CloudWatch logging.
+   - Use `aws autoscaling describe-auto-scaling-groups` to verify scaling configuration.
+   - Use `aws elbv2 describe-load-balancers` to confirm the load balancer is active.
 
 ### Destroy Infrastructure
 To tear down the infrastructure when no longer needed:
@@ -126,3 +164,5 @@ terraform destroy -auto-approve
 - Keep RDS credentials secure by storing them in AWS Secrets Manager.
 - Avoid exposing the database to the public for security reasons.
 - Monitor CloudWatch for application logs and performance metrics.
+- Ensure that Route 53 is correctly updated to reflect the load balancer changes.
+
