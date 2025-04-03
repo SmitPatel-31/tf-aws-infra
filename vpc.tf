@@ -4,6 +4,7 @@ resource "aws_vpc" "main" {
   tags = {
     Name = "main-vpc"
   }
+
   provisioner "local-exec" {
     command = "echo 'VPC created with CIDR: ${var.vpc_cidr}'"
   }
