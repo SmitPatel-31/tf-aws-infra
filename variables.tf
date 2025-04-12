@@ -127,3 +127,18 @@ variable "db_sg_name" {
   type        = string
   default     = "database-security-group"
 }
+variable "demo_zone_id" {
+  description = "Route53 zone ID for demo"
+  type        = string
+}
+
+variable "dev_zone_id" {
+  description = "Route53 zone ID for dev"
+  type        = string
+
+}
+
+variable "db_secret_name" {
+  description = "Name of the database secret"
+  type        = string
+}

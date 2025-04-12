@@ -46,6 +46,33 @@ resource "aws_iam_policy" "ec2_s3_cloudwatch_policy" {
           "logs:DescribeLogStreams"
         ]
         Resource = "*"
+      },
+      {
+        "Effect" : "Allow",
+        "Action" : [
+          "secretsmanager:CreateSecret",
+          "secretsmanager:PutSecretValue",
+          "secretsmanager:GetSecretValue",
+          "secretsmanager:DeleteSecret",
+          "secretsmanager:DescribeSecret",
+          "secretsmanager:TagResource"
+        ],
+        "Resource" : "*"
+      },
+      {
+        Effect = "Allow",
+        Action = [
+          "kms:Encrypt",
+          "kms:Decrypt",
+          "kms:GenerateDataKey*",
+          "kms:DescribeKey"
+        ],
+        Resource = [
+          data.aws_kms_key.ec2_key.arn,
+          data.aws_kms_key.rds_key.arn,
+          data.aws_kms_key.s3_key.arn,
+          data.aws_kms_key.secret_manager.arn
+        ]
       }
     ]
   })

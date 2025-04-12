@@ -16,9 +16,11 @@ resource "aws_launch_template" "web_app" {
 
   user_data = base64encode(<<-EOF
     #!/bin/bash
+    DB_PASSWORD=$(aws secretsmanager get-secret-value --secret-id ${var.db_secret_name} --region ${var.region} --query SecretString --output text | jq -r .password)
+
     echo "DB_NAME=${aws_db_instance.postgres_instance.db_name}" >> /etc/environment
     echo "DB_USER=${aws_db_instance.postgres_instance.username}" >> /etc/environment
-    echo "DB_PASSWORD=${aws_db_instance.postgres_instance.password}" >> /etc/environment
+    echo "DB_PASSWORD=$DB_PASSWORD" >> /etc/environment
     echo "DB_HOST=${aws_db_instance.postgres_instance.address}" >> /etc/environment
     echo "DB_DIALECT=${var.db_dialect}" >> /etc/environment
 
@@ -44,6 +46,15 @@ resource "aws_launch_template" "web_app" {
 
   EOF
   )
+
+  block_device_mappings {
+    device_name = "/dev/sda1"
+    ebs {
+      encrypted   = true
+      kms_key_id  = data.aws_kms_key.ec2_key.arn
+      volume_size = 20
+    }
+  }
 }
 
 resource "aws_autoscaling_group" "web_app_asg" {
