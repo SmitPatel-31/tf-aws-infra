@@ -6,6 +6,8 @@ resource "aws_lb" "web_alb" {
   subnets            = aws_subnet.public[*].id # Dynamically get subnet IDs from public subnets
 }
 
+
+
 resource "aws_lb_target_group" "web_tg" {
   name        = "web-target-group"
   port        = 8080
@@ -32,6 +34,19 @@ resource "aws_lb_listener" "http" {
     target_group_arn = aws_lb_target_group.web_tg.arn
   }
 }
+resource "aws_lb_listener" "https" {
+  load_balancer_arn = aws_lb.web_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = data.aws_acm_certificate.imported_cert.arn
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.web_tg.arn
+  }
+}
+
 
 # resource "aws_autoscaling_attachment" "asg_alb_attachment" {
 #   autoscaling_group_name = aws_autoscaling_group.web_app_asg.id
